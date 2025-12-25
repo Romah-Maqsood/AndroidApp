@@ -1,11 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme. -->
     <style name="Theme.EchoSign" parent="Theme.MaterialComponents.DayNight.NoActionBar">
-        <item name="colorPrimary">#6200EE</item>
-        <item name="colorPrimaryVariant">#3700B3</item>
+        <!-- Primary brand color - Light Blue -->
+        <item name="colorPrimary">#2196F3</item>
+        <item name="colorPrimaryVariant">#1976D2</item>
         <item name="colorOnPrimary">#FFFFFF</item>
-        <item name="colorSecondary">#03DAC6</item>
-        <item name="colorSecondaryVariant">#018786</item>
-        <item name="colorOnSecondary">#000000</item>
-        <item name="android:statusBarColor">?attr/colorPrimaryVariant</item>
+
+        <!-- Secondary brand color -->
+        <item name="colorSecondary">#03A9F4</item>
+        <item name="colorSecondaryVariant">#0288D1</item>
+        <item name="colorOnSecondary">#FFFFFF</item>
+
+        <!-- Background colors -->
+        <item name="android:windowBackground">#F5F9FF</item>
+        <item name="android:statusBarColor">#1976D2</item>
+
+        <!-- Text colors -->
+        <item name="android:textColorPrimary">#212121</item>
+        <item name="android:textColorSecondary">#757575</item>
+    </style>
+
+    <!-- Splash Theme -->
+    <style name="Theme.EchoSign.Splash" parent="Theme.EchoSign">
+        <item name="android:windowBackground">#2196F3</item>
+        <item name="android:statusBarColor">#1976D2</item>
     </style>
 </resources>

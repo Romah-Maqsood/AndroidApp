@@ -1,33 +1,97 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFFFFF">
+    android:background="#F5F9FF"
+    android:orientation="vertical"
+    android:padding="24dp">
 
-    <TextView
-        android:id="@+id/tvWelcomeUser"
-        android:layout_width="wrap_content"
+    <!-- Header -->
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Welcome to Main Screen"
-        android:textSize="24sp"
-        android:textColor="#000000"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="100dp" />
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:padding="16dp"
+        android:background="#FFFFFF"
+        android:elevation="4dp"
+        android:layout_marginBottom="24dp">
 
-    <com.google.android.material.button.MaterialButton
+        <!-- Simple colored circle as app logo -->
+        <View
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:background="#2196F3"
+            android:layout_marginEnd="16dp" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tvWelcomeUser"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Welcome, User"
+                android:textSize="20sp"
+                android:textColor="#212121"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Ready to sign documents"
+                android:textSize="14sp"
+                android:textColor="#757575"
+                android:layout_marginTop="4dp" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- Content Area -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:gravity="center">
+
+        <!-- Simple colored square as document icon -->
+        <View
+            android:layout_width="120dp"
+            android:layout_height="120dp"
+            android:background="#E3F2FD"
+            android:layout_marginBottom="24dp" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="No documents pending"
+            android:textSize="18sp"
+            android:textColor="#757575" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Upload or create a new document to get started"
+            android:textSize="14sp"
+            android:textColor="#BDBDBD"
+            android:layout_marginTop="8dp"
+            android:textAlignment="center" />
+    </LinearLayout>
+
+    <!-- Logout Button -->
+    <Button
         android:id="@+id/btnLogout"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="56dp"
-        android:text="Logout"
-        android:textSize="18sp"
-        app:cornerRadius="8dp"
-        app:layout_constraintTop_toBottomOf="@id/tvWelcomeUser"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:layout_marginTop="40dp" />
+        android:text="Sign Out"
+        android:textSize="16sp"
+        android:background="#F44336"
+        android:textColor="#FFFFFF"
+        android:gravity="center"
+        android:padding="0dp"
+        android:layout_marginTop="24dp" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+</LinearLayout>

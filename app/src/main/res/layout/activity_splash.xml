@@ -1,11 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#6200EE">
+    android:background="#2196F3"
+    android:gravity="center"
+    android:orientation="vertical">
 
+    <!-- App Logo -->
+    <View
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:background="#FFFFFF"
+        android:elevation="8dp" />
+
+    <!-- App Name -->
     <TextView
         android:id="@+id/tvSplashTitle"
         android:layout_width="wrap_content"
@@ -14,9 +22,21 @@
         android:textSize="36sp"
         android:textStyle="bold"
         android:textColor="#FFFFFF"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        android:layout_marginTop="24dp" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <!-- Tagline -->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Secure • Fast • Reliable"
+        android:textSize="14sp"
+        android:textColor="#E3F2FD"
+        android:layout_marginTop="12dp" />
+
+    <!-- Loading Indicator -->
+    <ProgressBar
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="48dp" />
+
+</LinearLayout>

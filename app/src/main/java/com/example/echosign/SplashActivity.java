@@ -1,16 +1,26 @@
 package com.example.echosign;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import androidx.appcompat.app.AppCompatActivity;
 
 public class SplashActivity extends AppCompatActivity {
+
+    private static final int SPLASH_DELAY = 1500;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
 
-        // Step 4: No navigation logic, no delay, no handlers
-        // Screen displays visually but doesn't navigate anywhere
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                Intent intent = new Intent(SplashActivity.this, LoginActivity.class);
+                startActivity(intent);
+                finish();
+            }
+        }, SPLASH_DELAY);
     }
 }

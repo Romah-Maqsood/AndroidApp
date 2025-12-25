@@ -1,12 +1,15 @@
 package com.example.echosign;
 
 import android.os.Bundle;
+import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
+import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 
 public class MainActivity extends AppCompatActivity {
 
-    // UI element - declared but not used functionally
+    private TextView tvWelcomeUser;
     private Button btnLogout;
 
     @Override
@@ -14,10 +17,18 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // Initialize view (visual only - no functionality)
+        tvWelcomeUser = findViewById(R.id.tvWelcomeUser);
         btnLogout = findViewById(R.id.btnLogout);
 
-        // Step 4: No click listeners, no navigation, no logic
-        // Button exists visually but does nothing
+        btnLogout.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Toast.makeText(MainActivity.this,
+                        "Logout button pressed",
+                        Toast.LENGTH_SHORT).show();
+
+                System.out.println("MainActivity - Logout button clicked");
+            }
+        });
     }
 }
