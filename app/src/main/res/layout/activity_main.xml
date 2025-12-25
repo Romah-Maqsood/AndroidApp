@@ -1,29 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F5F9FF"
+    android:background="#F8F9FA"
     android:orientation="vertical"
-    android:padding="24dp">
+    android:padding="0dp">
 
-    <!-- Header -->
+    <!-- Header Section -->
     <LinearLayout
+        android:id="@+id/headerSection"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:gravity="center_vertical"
+        android:background="#2196F3"
         android:padding="16dp"
-        android:background="#FFFFFF"
-        android:elevation="4dp"
-        android:layout_marginBottom="24dp">
+        android:elevation="8dp"
+        android:gravity="center_vertical">
 
-        <!-- App logo -->
-        <View
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:background="#2196F3"
-            android:layout_marginEnd="16dp" />
+        <!-- App Logo -->
+        <LinearLayout
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="@drawable/circle_background_white"
+            android:gravity="center"
+            android:layout_marginEnd="12dp">
 
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="ES"
+                android:textColor="#2196F3"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+
+        <!-- App Title and User Info -->
         <LinearLayout
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -31,70 +44,268 @@
             android:orientation="vertical">
 
             <TextView
-                android:id="@+id/tvWelcomeUser"
+                android:id="@+id/tvAppTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Welcome, User"
+                android:text="EchoSign"
+                android:textColor="#FFFFFF"
                 android:textSize="20sp"
-                android:textColor="#212121"
                 android:textStyle="bold" />
 
             <TextView
-                android:id="@+id/tvLoginStatus"
+                android:id="@+id/tvWelcomeUser"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Auto-login active"
-                android:textSize="14sp"
-                android:textColor="#4CAF50"
-                android:layout_marginTop="4dp" />
+                android:text="Ready to convert speech"
+                android:textColor="#E3F2FD"
+                android:textSize="12sp"
+                android:layout_marginTop="2dp" />
         </LinearLayout>
+
+        <!-- Logout Button -->
+        <Button
+            android:id="@+id/btnLogout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Logout"
+            android:textColor="#FFFFFF"
+            android:background="@android:color/transparent"
+            android:textSize="14sp"
+            android:padding="8dp"
+            android:minWidth="0dp"
+            android:minHeight="0dp" />
     </LinearLayout>
 
-    <!-- Content Area -->
+    <!-- Recognized Text Area Section -->
     <LinearLayout
+        android:id="@+id/textSection"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1"
+        android:layout_weight="2"
         android:orientation="vertical"
+        android:background="#FFFFFF"
+        android:padding="24dp"
+        android:layout_margin="16dp"
+        android:layout_marginTop="24dp"
+        android:layout_marginBottom="8dp"
+        android:elevation="4dp"
         android:gravity="center">
 
-        <!-- Document icon -->
-        <View
-            android:layout_width="120dp"
-            android:layout_height="120dp"
-            android:background="#E3F2FD"
-            android:layout_marginBottom="24dp" />
-
+        <!-- Section Title -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Step 7: Auto-Login Successful!"
-            android:textSize="18sp"
+            android:text="Recognized Speech"
             android:textColor="#2196F3"
-            android:textStyle="bold" />
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="16dp" />
 
+        <!-- Speech Text Display -->
+        <TextView
+            android:id="@+id/tvRecognizedText"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="Speech text will appear here...\n\nTry saying: &quot;Hello, how are you?&quot;"
+            android:textColor="#424242"
+            android:textSize="16sp"
+            android:gravity="center"
+            android:lineSpacingExtra="4dp"
+            android:padding="16dp"
+            android:background="@drawable/rounded_border"
+            android:textIsSelectable="true" />
+
+        <!-- Placeholder text for empty state -->
+        <TextView
+            android:id="@+id/tvEmptyText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="No speech detected yet"
+            android:textColor="#9E9E9E"
+            android:textSize="14sp"
+            android:layout_marginTop="16dp"
+            android:visibility="gone" />
+    </LinearLayout>
+
+    <!-- Sign Display Area Section -->
+    <LinearLayout
+        android:id="@+id/signSection"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="3"
+        android:orientation="vertical"
+        android:background="#FFFFFF"
+        android:padding="16dp"
+        android:layout_margin="16dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        android:elevation="4dp"
+        android:gravity="center">
+
+        <!-- Section Title -->
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="✓ Auto-login implemented\n✓ Session persists after restart\n✓ Smart navigation flow\n✓ Professional user experience"
-            android:textSize="14sp"
+            android:text="Sign Language Output"
+            android:textColor="#2196F3"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="16dp" />
+
+        <!-- Animation/Image Container -->
+        <FrameLayout
+            android:id="@+id/animationContainer"
+            android:layout_width="200dp"
+            android:layout_height="200dp"
+            android:background="#F5F5F5"
+            android:gravity="center"
+            android:layout_marginBottom="16dp">
+
+            <!-- Placeholder Image View for GIFs/Animations -->
+            <ImageView
+                android:id="@+id/ivSignAnimation"
+                android:layout_width="120dp"
+                android:layout_height="120dp"
+                android:src="@drawable/sign_language_placeholder"
+                android:scaleType="centerInside"
+                android:layout_gravity="center"
+                android:contentDescription="Sign language animation placeholder" />
+
+            <!-- Progress indicator (hidden by default) -->
+            <ProgressBar
+                android:id="@+id/pbLoading"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:visibility="gone" />
+        </FrameLayout>
+
+        <!-- Current Word Display -->
+        <TextView
+            android:id="@+id/tvCurrentWord"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=""
+            android:textColor="#2196F3"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="8dp"
+            android:visibility="gone" />
+
+        <!-- Sign Description -->
+        <TextView
+            android:id="@+id/tvSignDescription"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Sign animations will appear here"
             android:textColor="#757575"
-            android:layout_marginTop="16dp"
-            android:lineSpacingExtra="4dp"
+            android:textSize="14sp"
             android:gravity="center" />
     </LinearLayout>
 
-    <!-- Logout Button -->
-    <Button
-        android:id="@+id/btnLogout"
+    <!-- Control Area Section -->
+    <LinearLayout
+        android:id="@+id/controlSection"
         android:layout_width="match_parent"
-        android:layout_height="56dp"
-        android:text="Sign Out"
-        android:textSize="16sp"
-        android:background="#F44336"
-        android:textColor="#FFFFFF"
-        android:gravity="center"
-        android:padding="0dp"
-        android:layout_marginTop="24dp" />
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:background="#FFFFFF"
+        android:padding="24dp"
+        android:layout_margin="16dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="24dp"
+        android:elevation="4dp"
+        android:gravity="center">
+
+        <!-- Section Title -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Controls"
+            android:textColor="#2196F3"
+            android:textSize="18sp"
+            android:textStyle="bold"
+            android:layout_marginBottom="24dp" />
+
+        <!-- Button Row -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:layout_marginBottom="16dp">
+
+            <!-- Start Button -->
+            <Button
+                android:id="@+id/btnStart"
+                android:layout_width="0dp"
+                android:layout_height="56dp"
+                android:layout_weight="1"
+                android:text="Start Listening"
+                android:textSize="16sp"
+                android:background="#4CAF50"
+                android:textColor="#FFFFFF"
+                android:gravity="center"
+                android:layout_marginEnd="8dp"
+                android:elevation="4dp"
+                android:stateListAnimator="@null" />
+
+            <!-- Stop Button -->
+            <Button
+                android:id="@+id/btnStop"
+                android:layout_width="0dp"
+                android:layout_height="56dp"
+                android:layout_weight="1"
+                android:text="Stop"
+                android:textSize="16sp"
+                android:background="#F44336"
+                android:textColor="#FFFFFF"
+                android:gravity="center"
+                android:layout_marginStart="8dp"
+                android:elevation="4dp"
+                android:stateListAnimator="@null"
+                android:enabled="false" />
+        </LinearLayout>
+
+        <!-- Clear Button -->
+        <Button
+            android:id="@+id/btnClear"
+            android:layout_width="match_parent"
+            android:layout_height="48dp"
+            android:text="Clear Text"
+            android:textSize="16sp"
+            android:background="#FF9800"
+            android:textColor="#FFFFFF"
+            android:gravity="center"
+            android:layout_marginTop="8dp"
+            android:elevation="2dp"
+            android:stateListAnimator="@null" />
+
+        <!-- Status Indicator -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:layout_marginTop="24dp">
+
+            <!-- Status Dot -->
+            <View
+                android:id="@+id/statusDot"
+                android:layout_width="12dp"
+                android:layout_height="12dp"
+                android:background="#E0E0E0"
+                android:layout_marginEnd="8dp" />
+
+            <!-- Status Text -->
+            <TextView
+                android:id="@+id/tvStatus"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Ready to start"
+                android:textColor="#757575"
+                android:textSize="14sp" />
+        </LinearLayout>
+    </LinearLayout>
 
 </LinearLayout>
