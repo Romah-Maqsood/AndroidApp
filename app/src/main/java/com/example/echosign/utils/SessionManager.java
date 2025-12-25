@@ -20,48 +20,46 @@ public class SessionManager {
     // Constructor
     public SessionManager(Context context) {
         this.context = context;
-        // Create SharedPreferences with private mode (only this app can access)
         sharedPreferences = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
         editor = sharedPreferences.edit();
     }
 
     /**
      * Create login session and save user credentials
-     * @param username Username entered by user
-     * @param password Password entered by user (stored for demo only)
      */
     public void createLoginSession(String username, String password) {
-        // Step 6.2: Save login status and user data
+        // Save login status and user data
         editor.putBoolean(KEY_IS_LOGGED_IN, true);
         editor.putString(KEY_USERNAME, username);
-        editor.putString(KEY_PASSWORD, password); // Note: In real apps, NEVER store passwords like this
+        editor.putString(KEY_PASSWORD, password);
 
         // Commit changes
         editor.apply();
 
-        // Log for debugging
-        System.out.println("SessionManager: Login session created for user: " + username);
+        System.out.println("SessionManager: Login session CREATED for: " + username);
+        System.out.println("SessionManager: isLoggedIn = true");
     }
 
     /**
      * Check if user is logged in
-     * @return true if user is logged in, false otherwise
      */
     public boolean isLoggedIn() {
-        return sharedPreferences.getBoolean(KEY_IS_LOGGED_IN, false);
+        boolean status = sharedPreferences.getBoolean(KEY_IS_LOGGED_IN, false);
+        System.out.println("SessionManager: Checking login status = " + status);
+        return status;
     }
 
     /**
      * Get stored username
-     * @return Username or null if not found
      */
     public String getUsername() {
-        return sharedPreferences.getString(KEY_USERNAME, null);
+        String username = sharedPreferences.getString(KEY_USERNAME, null);
+        System.out.println("SessionManager: Retrieved username = " + username);
+        return username;
     }
 
     /**
      * Get stored password (for demo only)
-     * @return Password or null if not found
      */
     public String getPassword() {
         return sharedPreferences.getString(KEY_PASSWORD, null);
@@ -71,24 +69,27 @@ public class SessionManager {
      * Clear session data (logout)
      */
     public void logoutUser() {
+        // Get username before clearing
+        String username = getUsername();
+
         // Clear all stored data
         editor.clear();
         editor.apply();
 
-        System.out.println("SessionManager: User logged out, session cleared");
+        System.out.println("SessionManager: User LOGGED OUT: " + username);
+        System.out.println("SessionManager: All session data cleared");
     }
 
     /**
      * Get all stored data for debugging
-     * @return String with all stored data
      */
     public String getAllData() {
         boolean isLoggedIn = sharedPreferences.getBoolean(KEY_IS_LOGGED_IN, false);
         String username = sharedPreferences.getString(KEY_USERNAME, "null");
         String password = sharedPreferences.getString(KEY_PASSWORD, "null");
 
-        return "Login Status: " + isLoggedIn +
+        return "isLoggedIn: " + isLoggedIn +
                 "\nUsername: " + username +
-                "\nPassword: " + password;
+                "\nPassword: " + (password.length() + " characters");
     }
 }

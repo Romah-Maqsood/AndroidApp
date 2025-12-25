@@ -43,9 +43,9 @@
                 android:id="@+id/tvLoginStatus"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Session saved locally"
+                android:text="Auto-login active"
                 android:textSize="14sp"
-                android:textColor="#757575"
+                android:textColor="#4CAF50"
                 android:layout_marginTop="4dp" />
         </LinearLayout>
     </LinearLayout>
@@ -68,7 +68,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Step 6: SharedPreferences Demo"
+            android:text="Step 7: Auto-Login Successful!"
             android:textSize="18sp"
             android:textColor="#2196F3"
             android:textStyle="bold" />
@@ -76,11 +76,12 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="✓ Login state saved locally\n✓ Data persists after app close\n✓ No navigation yet"
+            android:text="✓ Auto-login implemented\n✓ Session persists after restart\n✓ Smart navigation flow\n✓ Professional user experience"
             android:textSize="14sp"
             android:textColor="#757575"
             android:layout_marginTop="16dp"
-            android:lineSpacingExtra="4dp" />
+            android:lineSpacingExtra="4dp"
+            android:gravity="center" />
     </LinearLayout>
 
     <!-- Logout Button -->
@@ -88,7 +89,7 @@
         android:id="@+id/btnLogout"
         android:layout_width="match_parent"
         android:layout_height="56dp"
-        android:text="Sign Out (Coming in Step 7)"
+        android:text="Sign Out"
         android:textSize="16sp"
         android:background="#F44336"
         android:textColor="#FFFFFF"

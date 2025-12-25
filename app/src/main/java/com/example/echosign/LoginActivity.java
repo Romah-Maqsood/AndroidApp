@@ -1,5 +1,6 @@
 package com.example.echosign;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -28,7 +29,10 @@ public class LoginActivity extends AppCompatActivity {
         etPassword = findViewById(R.id.etPassword);
         btnLogin = findViewById(R.id.btnLogin);
 
-        // Step 6.2: Save login status on button press
+        // Check if user is already logged in (just for logging)
+        logCurrentStatus();
+
+        // Login button click listener
         btnLogin.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -36,59 +40,40 @@ public class LoginActivity extends AppCompatActivity {
                 String username = etUsername.getText().toString().trim();
                 String password = etPassword.getText().toString().trim();
 
-                // Step 6.4: Confirm data is saved with temporary confirmation
                 if (username.isEmpty() || password.isEmpty()) {
                     Toast.makeText(LoginActivity.this,
                             "Please enter both username and password",
                             Toast.LENGTH_SHORT).show();
                 } else {
-                    // Step 6.2: Save login session using SharedPreferences
+                    // Save login session
                     sessionManager.createLoginSession(username, password);
 
-                    // Step 6.4: Show confirmation that data is saved
-                    showSaveConfirmation(username);
+                    // Show confirmation
+                    Toast.makeText(LoginActivity.this,
+                            "Login successful!\nWelcome, " + username,
+                            Toast.LENGTH_SHORT).show();
 
-                    // Step 6.5: Keep app on same screen (NO navigation yet)
-                    // We stay on LoginActivity as per Step 6 requirements
-
-                    // Clear fields after saving
-                    etUsername.setText("");
-                    etPassword.setText("");
+                    // Step 7.4: Navigate to MainActivity and prevent back navigation
+                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                    startActivity(intent);
+                    finish(); // Close LoginActivity so user can't go back
                 }
             }
         });
     }
 
-    // Step 6.4: Show confirmation that data is saved
-    private void showSaveConfirmation(String username) {
-        // Get all stored data for confirmation
-        String storedData = sessionManager.getAllData();
+    /**
+     * Log current status for debugging
+     */
+    private void logCurrentStatus() {
+        boolean isLoggedIn = sessionManager.isLoggedIn();
+        System.out.println("LoginActivity - Current login status: " + isLoggedIn);
 
-        // Show toast with saved information
-        Toast.makeText(this,
-                "Login data saved!\n" +
-                        "User: " + username + "\n" +
-                        "Check Logcat for details",
-                Toast.LENGTH_LONG).show();
-
-        // Log detailed information for debugging
-        System.out.println("=== LOGIN DATA SAVED ===");
-        System.out.println("Username entered: " + username);
-        System.out.println("Stored in SharedPreferences:");
-        System.out.println(storedData);
-        System.out.println("========================");
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-
-        // Optional: Check if user is already logged in (for debugging)
-        if (sessionManager.isLoggedIn()) {
+        if (isLoggedIn) {
+            // This shouldn't happen in Step 7, but log if it does
             String username = sessionManager.getUsername();
             System.out.println("LoginActivity - User already logged in: " + username);
-        } else {
-            System.out.println("LoginActivity - No user logged in");
+            System.out.println("LoginActivity - This screen shouldn't show if user is logged in!");
         }
     }
 }

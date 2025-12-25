@@ -10,7 +10,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.EchoSign">
 
-        <!-- Splash Activity (Launcher) -->
+        <!-- Splash Activity (Launcher) - Step 7.1: Entry point -->
         <activity
             android:name=".SplashActivity"
             android:exported="true"
@@ -24,12 +24,14 @@
         <!-- Login Activity -->
         <activity
             android:name=".LoginActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:launchMode="singleTask" />
 
         <!-- Main Activity -->
         <activity
             android:name=".MainActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:launchMode="singleTask" />
     </application>
 
 </manifest>
