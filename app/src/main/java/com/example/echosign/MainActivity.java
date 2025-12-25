@@ -32,6 +32,8 @@ public class MainActivity extends AppCompatActivity {
 
     // Recognized Text Area
     private TextView tvRecognizedText;
+    private TextView tvEnglishText;
+    private TextView tvASLGlossText;
     private TextView tvEmptyText;
 
     // Sign Display Area
@@ -57,26 +59,14 @@ public class MainActivity extends AppCompatActivity {
     private boolean isListening = false;
     private static final int RECORD_AUDIO_PERMISSION_CODE = 100;
 
-    // Sign Mapping
+    // Sign Mapping with ASL Gloss
     private SignMapper signMapper;
     private List<String> wordQueue = new ArrayList<>();
+    private List<String> englishWords = new ArrayList<>();
+    private List<String> aslGlossWords = new ArrayList<>();
     private int currentWordIndex = 0;
     private boolean isShowingSigns = false;
     private Handler signHandler = new Handler();
-
-    // Animation resources (simulated with drawable states)
-    private int[] signAnimations = {
-            R.drawable.ic_hello,
-            R.drawable.ic_thank_you,
-            R.drawable.ic_yes,
-            R.drawable.ic_no
-//            R.drawable.ic_please,
-//            R.drawable.ic_sorry,
-//            R.drawable.ic_help,
-//            R.drawable.ic_water,
-//            R.drawable.ic_food,
-//            R.drawable.ic_bathroom
-    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,7 +76,7 @@ public class MainActivity extends AppCompatActivity {
         // Initialize SessionManager
         sessionManager = new SessionManager(this);
 
-        // Initialize SignMapper
+        // Initialize SignMapper (now includes ASL Gloss converter)
         signMapper = new SignMapper(this);
 
         // Initialize all UI components
@@ -104,7 +94,7 @@ public class MainActivity extends AppCompatActivity {
         // Check microphone permission
         checkMicrophonePermission();
 
-        System.out.println("MainActivity: Step 10 - Text-to-Sign mapping ready");
+        System.out.println("MainActivity: Step 11 - ASL Gloss Conversion ready");
     }
 
     /**
@@ -117,6 +107,8 @@ public class MainActivity extends AppCompatActivity {
 
         // Recognized Text Area
         tvRecognizedText = findViewById(R.id.tvRecognizedText);
+        tvEnglishText = findViewById(R.id.tvEnglishText);
+        tvASLGlossText = findViewById(R.id.tvASLGlossText);
         tvEmptyText = findViewById(R.id.tvEmptyText);
 
         // Sign Display Area
@@ -182,9 +174,11 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onRmsChanged(float rmsdB) {
                 // Visual feedback for speech volume
-                float scale = Math.min(1.0f, rmsdB / 10);
-                ivSignAnimation.setScaleX(1.0f + scale * 0.1f);
-                ivSignAnimation.setScaleY(1.0f + scale * 0.1f);
+                runOnUiThread(() -> {
+                    float scale = Math.min(1.0f, rmsdB / 10);
+                    ivSignAnimation.setScaleX(1.0f + scale * 0.1f);
+                    ivSignAnimation.setScaleY(1.0f + scale * 0.1f);
+                });
             }
 
             @Override
@@ -216,10 +210,9 @@ public class MainActivity extends AppCompatActivity {
                         updateUIForListening(false);
                         tvStatus.setText("Recognition complete");
                         statusDot.setBackgroundColor(getResources().getColor(android.R.color.holo_blue_light));
-                        tvSignDescription.setText("Text captured successfully!");
 
-                        // Step 10.1: Tokenize and process the text for sign mapping
-                        processTextForSigns(recognizedText);
+                        // Step 11: Process text through ASL Gloss conversion
+                        processTextWithASLGloss(recognizedText);
                     });
                 }
             }
@@ -242,37 +235,52 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
-     * Step 10.1: Tokenize and process text for sign mapping
+     * Step 11: Process text through ASL Gloss conversion
      */
-    private void processTextForSigns(String text) {
-        // Clear previous queue
+    private void processTextWithASLGloss(String englishText) {
+        // Clear previous queues
         wordQueue.clear();
+        englishWords.clear();
+        aslGlossWords.clear();
         currentWordIndex = 0;
 
-        // Tokenize text into words
-        String[] words = text.toLowerCase().split("\\s+");
+        // Store English text
+        tvEnglishText.setText("English: " + englishText);
 
-        // Filter out common filler words (Step 10.1)
-        List<String> filteredWords = new ArrayList<>();
-        for (String word : words) {
-            word = word.replaceAll("[^a-zA-Z]", ""); // Remove punctuation
-            if (!word.isEmpty() && !isFillerWord(word)) {
-                filteredWords.add(word);
-            }
+        // Step 11: Convert English to ASL Gloss
+        String aslGloss = signMapper.processTextWithASLGloss(englishText);
+
+        // Display ASL Gloss
+        tvASLGlossText.setText("ASL Gloss: " + aslGloss);
+        tvASLGlossText.setVisibility(View.VISIBLE);
+
+        // Tokenize ASL Gloss for display
+        String[] aslTokens = signMapper.tokenizeASLGloss(aslGloss);
+        for (String token : aslTokens) {
+            wordQueue.add(token);
+            aslGlossWords.add(token);
         }
 
-        wordQueue.addAll(filteredWords);
+        // Tokenize English for comparison
+        String[] engTokens = englishText.split("\\s+");
+        for (String token : engTokens) {
+            englishWords.add(token);
+        }
 
-        // Update UI to show word count
-        tvSignDescription.setText("Ready to show " + wordQueue.size() + " signs");
+        // Update UI to show ASL Gloss word count
+        int englishCount = englishWords.size();
+        int aslCount = aslGlossWords.size();
+        tvSignDescription.setText("ASL Gloss: " + aslCount + " words (from " + englishCount + " English)");
 
         // Enable the "Show Signs" button
         btnShowSigns.setEnabled(true);
         btnShowSigns.setBackgroundColor(getResources().getColor(android.R.color.holo_purple));
 
         // Log for debugging
-        System.out.println("Step 10.1: Tokenized text into " + wordQueue.size() + " words");
-        System.out.println("Words: " + wordQueue);
+        System.out.println("Step 11: English → ASL Gloss Conversion");
+        System.out.println("English: " + englishText);
+        System.out.println("ASL Gloss: " + aslGloss);
+        System.out.println("English words: " + englishCount + ", ASL words: " + aslCount);
 
         // If there are words, show first word preview
         if (!wordQueue.isEmpty()) {
@@ -281,53 +289,33 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
-     * Check if word is a filler word
+     * Show preview of an ASL Gloss word
      */
-    private boolean isFillerWord(String word) {
-        String[] fillerWords = {
-                "a", "an", "the", "and", "or", "but", "in", "on", "at", "to",
-                "for", "of", "with", "by", "is", "are", "was", "were", "be",
-                "been", "being", "have", "has", "had", "do", "does", "did",
-                "will", "would", "shall", "should", "may", "might", "must",
-                "can", "could", "um", "uh", "ah", "like", "you", "me", "i"
-        };
-
-        for (String filler : fillerWords) {
-            if (filler.equals(word)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    /**
-     * Show preview of a word
-     */
-    private void showWordPreview(String word) {
+    private void showWordPreview(String glossWord) {
         // Check if word has a sign mapping
-        if (signMapper.hasSignForWord(word)) {
-            String signInfo = signMapper.getSignInfo(word);
-            tvCurrentWord.setText(word.toUpperCase());
+        if (signMapper.hasSignForGlossWord(glossWord)) {
+            String signInfo = signMapper.getSignForGlossWord(glossWord);
+            tvCurrentWord.setText(glossWord);
             tvCurrentWord.setVisibility(View.VISIBLE);
-            tvSignDescription.setText("Word: " + word + " → " + signInfo);
+            tvSignDescription.setText("ASL: " + glossWord + " → " + signInfo);
 
             // Visual feedback for mapped word
-            ivSignAnimation.setImageResource(getRandomSignAnimation());
+            ivSignAnimation.setBackgroundColor(getResources().getColor(android.R.color.holo_blue_light));
             ivSignAnimation.animate().scaleX(1.1f).scaleY(1.1f).setDuration(300).start();
         } else {
             // Show fallback for missing sign
-            tvCurrentWord.setText("Spell: " + word.toUpperCase());
+            tvCurrentWord.setText("Spell: " + glossWord);
             tvCurrentWord.setVisibility(View.VISIBLE);
-            tvSignDescription.setText("Word: " + word + " (will be spelled)");
+            tvSignDescription.setText("ASL: " + glossWord + " (will be spelled)");
 
             // Different visual for spelled words
-            ivSignAnimation.setImageResource(R.drawable.ic_spell);
+            ivSignAnimation.setBackgroundColor(getResources().getColor(android.R.color.holo_orange_light));
             ivSignAnimation.animate().scaleX(0.9f).scaleY(0.9f).setDuration(300).start();
         }
     }
 
     /**
-     * Step 10.4: Display signs sequentially
+     * Display signs sequentially
      */
     private void startShowingSigns() {
         if (wordQueue.isEmpty() || isShowingSigns) {
@@ -344,7 +332,7 @@ public class MainActivity extends AppCompatActivity {
         btnShowSigns.setEnabled(false);
 
         // Update status
-        tvStatus.setText("Showing signs...");
+        tvStatus.setText("Showing ASL signs...");
         statusDot.setBackgroundColor(getResources().getColor(android.R.color.holo_purple));
 
         // Start the sequence
@@ -352,7 +340,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
     /**
-     * Show next sign in the sequence
+     * Show next ASL sign in the sequence
      */
     private void showNextSign() {
         if (currentWordIndex >= wordQueue.size()) {
@@ -361,20 +349,20 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
 
-        String currentWord = wordQueue.get(currentWordIndex);
+        String currentGlossWord = wordQueue.get(currentWordIndex);
 
-        // Update display
-        tvCurrentWord.setText(currentWord.toUpperCase());
+        // Update display with ASL Gloss word
+        tvCurrentWord.setText(currentGlossWord);
         tvCurrentWord.setVisibility(View.VISIBLE);
 
-        // Step 10.2 & 10.3: Get sign animation or fallback
-        if (signMapper.hasSignForWord(currentWord)) {
-            // Word has a mapped sign
-            String signInfo = signMapper.getSignInfo(currentWord);
-            tvSignDescription.setText("Sign for: " + currentWord + " (" + signInfo + ")");
+        // Get sign for ASL Gloss word
+        if (signMapper.hasSignForGlossWord(currentGlossWord)) {
+            // ASL Gloss word has a mapped sign
+            String signInfo = signMapper.getSignForGlossWord(currentGlossWord);
+            tvSignDescription.setText("ASL Sign: " + currentGlossWord + " (" + signInfo + ")");
 
-            // Show "animation" - in real app this would be GIF/Lottie
-            ivSignAnimation.setImageResource(getRandomSignAnimation());
+            // Show "animation" - use color change for visual feedback
+            ivSignAnimation.setBackgroundColor(getResources().getColor(android.R.color.holo_green_light));
 
             // Animation effect
             ivSignAnimation.animate()
@@ -386,13 +374,13 @@ public class MainActivity extends AppCompatActivity {
                             .start())
                     .start();
 
-            System.out.println("Step 10.2: Showing sign for word: " + currentWord);
+            System.out.println("Showing ASL sign for: " + currentGlossWord);
         } else {
-            // Step 10.3: Fallback to alphabet spelling
-            tvSignDescription.setText("Spelling: " + currentWord);
+            // Fallback to alphabet spelling for ASL Gloss word
+            tvSignDescription.setText("Spelling ASL: " + currentGlossWord);
 
-            // Show spelling animation
-            ivSignAnimation.setImageResource(R.drawable.ic_spell);
+            // Show spelling visual feedback
+            ivSignAnimation.setBackgroundColor(getResources().getColor(android.R.color.holo_orange_light));
 
             // Visual feedback for spelling
             ivSignAnimation.animate()
@@ -400,12 +388,11 @@ public class MainActivity extends AppCompatActivity {
                     .setDuration(800)
                     .start();
 
-            System.out.println("Step 10.3: Spelling word (no sign): " + currentWord);
+            System.out.println("Spelling ASL word: " + currentGlossWord);
         }
 
         // Log progress
-        System.out.println("Step 10.4: Showing sign " + (currentWordIndex + 1) +
-                " of " + wordQueue.size() + ": " + currentWord);
+        System.out.println("ASL Sign " + (currentWordIndex + 1) + " of " + wordQueue.size() + ": " + currentGlossWord);
 
         // Schedule next sign after delay
         currentWordIndex++;
@@ -423,29 +410,21 @@ public class MainActivity extends AppCompatActivity {
         btnShowSigns.setEnabled(true);
 
         // Update status
-        tvStatus.setText("Sign sequence complete");
+        tvStatus.setText("ASL sequence complete");
         statusDot.setBackgroundColor(getResources().getColor(android.R.color.holo_green_dark));
-        tvSignDescription.setText(wordQueue.size() + " signs displayed successfully");
+        tvSignDescription.setText(wordQueue.size() + " ASL signs displayed");
 
         // Reset animation
         tvCurrentWord.setVisibility(View.GONE);
-        ivSignAnimation.setImageResource(R.drawable.sign_language_placeholder);
+        ivSignAnimation.setBackgroundColor(getResources().getColor(android.R.color.darker_gray));
         ivSignAnimation.setScaleX(1.0f);
         ivSignAnimation.setScaleY(1.0f);
+        ivSignAnimation.setRotation(0f);
 
         // Show completion message
-        Toast.makeText(this, "Sign sequence completed!", Toast.LENGTH_SHORT).show();
+        Toast.makeText(this, "ASL sign sequence completed!", Toast.LENGTH_SHORT).show();
 
-        System.out.println("Step 10.4: Sign sequence completed for " + wordQueue.size() + " words");
-    }
-
-    /**
-     * Get random sign animation (simulated)
-     */
-    private int getRandomSignAnimation() {
-        // In real app, this would return specific animation for each word
-        // For demo, return random from our placeholder animations
-        return signAnimations[(int) (Math.random() * signAnimations.length)];
+        System.out.println("ASL sign sequence completed for " + wordQueue.size() + " words");
     }
 
     /**
@@ -453,12 +432,17 @@ public class MainActivity extends AppCompatActivity {
      */
     private void setupUIState() {
         // Set initial text
-        tvRecognizedText.setText("Speak a sentence like: \"Hello, thank you, please help\"");
+        tvRecognizedText.setText("Speak English: \"Thank you for your help\"");
+        tvEnglishText.setVisibility(View.GONE);
+        tvASLGlossText.setVisibility(View.GONE);
         tvEmptyText.setVisibility(View.VISIBLE);
 
         // Set initial status
-        tvStatus.setText("Ready - Tap Start to begin");
+        tvStatus.setText("Ready - Tap Start to speak");
         statusDot.setBackgroundColor(getResources().getColor(android.R.color.darker_gray));
+
+        // Set initial animation background
+        ivSignAnimation.setBackgroundColor(getResources().getColor(android.R.color.darker_gray));
 
         // Logout button
         btnLogout.setOnClickListener(v -> logoutUser());
@@ -472,13 +456,12 @@ public class MainActivity extends AppCompatActivity {
         // Clear button
         btnClear.setOnClickListener(v -> clearRecognizedText());
 
-        // Show Signs button (Step 10 feature)
+        // Show Signs button
         btnShowSigns.setOnClickListener(v -> {
             if (!wordQueue.isEmpty()) {
                 startShowingSigns();
             } else {
-                Toast.makeText(this, "No words to convert to signs. Speak first!",
-                        Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "No ASL words to show. Speak first!", Toast.LENGTH_SHORT).show();
             }
         });
 
@@ -531,7 +514,7 @@ public class MainActivity extends AppCompatActivity {
                 speechRecognizer.startListening(speechIntent);
                 isListening = true;
                 updateUIForListening(true);
-                tvRecognizedText.setText("Listening... Speak now ▌");
+                tvRecognizedText.setText("Listening... Speak English now ▌");
                 tvEmptyText.setVisibility(View.GONE);
 
                 // Visual feedback
@@ -560,18 +543,28 @@ public class MainActivity extends AppCompatActivity {
      */
     private void clearRecognizedText() {
         tvRecognizedText.setText("");
+        tvEnglishText.setVisibility(View.GONE);
+        tvASLGlossText.setVisibility(View.GONE);
         tvEmptyText.setVisibility(View.VISIBLE);
         tvEmptyText.setText("Text cleared. Tap Start to speak again.");
-        tvSignDescription.setText("Ready for new speech input");
+        tvSignDescription.setText("Ready for English speech input");
 
-        // Clear sign queue
+        // Clear all queues
         wordQueue.clear();
+        englishWords.clear();
+        aslGlossWords.clear();
         currentWordIndex = 0;
         btnShowSigns.setEnabled(false);
         btnShowSigns.setBackgroundColor(getResources().getColor(android.R.color.darker_gray));
         tvCurrentWord.setVisibility(View.GONE);
 
-        Toast.makeText(this, "Text and sign queue cleared", Toast.LENGTH_SHORT).show();
+        // Reset animation
+        ivSignAnimation.setBackgroundColor(getResources().getColor(android.R.color.darker_gray));
+        ivSignAnimation.setScaleX(1.0f);
+        ivSignAnimation.setScaleY(1.0f);
+        ivSignAnimation.setRotation(0f);
+
+        Toast.makeText(this, "Text and ASL queue cleared", Toast.LENGTH_SHORT).show();
     }
 
     /**
@@ -599,10 +592,10 @@ public class MainActivity extends AppCompatActivity {
         btnShowSigns.setEnabled(!listening && !isShowingSigns && !wordQueue.isEmpty());
 
         if (listening) {
-            tvStatus.setText("Listening...");
+            tvStatus.setText("Listening English...");
             statusDot.setBackgroundColor(getResources().getColor(android.R.color.holo_green_light));
             tvCurrentWord.setVisibility(View.VISIBLE);
-            tvCurrentWord.setText("Speak now");
+            tvCurrentWord.setText("Speak English");
         } else {
             tvStatus.setText("Ready");
             statusDot.setBackgroundColor(getResources().getColor(android.R.color.darker_gray));
