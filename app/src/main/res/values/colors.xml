@@ -20,4 +20,7 @@
     <color name="status_listening">#2196F3</color>
     <color name="status_error">#F44336</color>
     <color name="status_inactive">#E0E0E0</color>
+
+    <color name="purple_500">#9C27B0</color>
+    <color name="purple_700">#7B1FA2</color>
 </resources>

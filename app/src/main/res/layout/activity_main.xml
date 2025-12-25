@@ -379,6 +379,22 @@
                         android:paddingStart="24dp"
                         android:paddingEnd="24dp" />
 
+
+                    <!-- Show Signs Button -->
+                    <Button
+                        android:id="@+id/btnShowSigns"
+                        android:layout_width="match_parent"
+                        android:layout_height="52dp"
+                        android:text="Show Sign Animations"
+                        android:textSize="15sp"
+                        android:background="#9C27B0"
+                        android:textColor="#FFFFFF"
+                        android:gravity="center"
+                        android:elevation="4dp"
+                        android:stateListAnimator="@null"
+                        android:layout_marginTop="12dp"
+                        android:enabled="false" />
+
                     <!-- Status Indicator -->
                     <LinearLayout
                         android:layout_width="match_parent"

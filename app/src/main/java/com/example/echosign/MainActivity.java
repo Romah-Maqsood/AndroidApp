@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.os.Handler;
 import android.speech.RecognitionListener;
 import android.speech.RecognizerIntent;
 import android.speech.SpeechRecognizer;
@@ -18,8 +19,10 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import com.example.echosign.utils.SessionManager;
+import com.example.echosign.utils.SignMapper;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -41,6 +44,7 @@ public class MainActivity extends AppCompatActivity {
     private Button btnStart;
     private Button btnStop;
     private Button btnClear;
+    private Button btnShowSigns;
     private View statusDot;
     private TextView tvStatus;
 
@@ -53,6 +57,27 @@ public class MainActivity extends AppCompatActivity {
     private boolean isListening = false;
     private static final int RECORD_AUDIO_PERMISSION_CODE = 100;
 
+    // Sign Mapping
+    private SignMapper signMapper;
+    private List<String> wordQueue = new ArrayList<>();
+    private int currentWordIndex = 0;
+    private boolean isShowingSigns = false;
+    private Handler signHandler = new Handler();
+
+    // Animation resources (simulated with drawable states)
+    private int[] signAnimations = {
+            R.drawable.ic_hello,
+            R.drawable.ic_thank_you,
+            R.drawable.ic_yes,
+            R.drawable.ic_no
+//            R.drawable.ic_please,
+//            R.drawable.ic_sorry,
+//            R.drawable.ic_help,
+//            R.drawable.ic_water,
+//            R.drawable.ic_food,
+//            R.drawable.ic_bathroom
+    };
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -60,6 +85,9 @@ public class MainActivity extends AppCompatActivity {
 
         // Initialize SessionManager
         sessionManager = new SessionManager(this);
+
+        // Initialize SignMapper
+        signMapper = new SignMapper(this);
 
         // Initialize all UI components
         initializeViews();
@@ -76,7 +104,7 @@ public class MainActivity extends AppCompatActivity {
         // Check microphone permission
         checkMicrophonePermission();
 
-        System.out.println("MainActivity: Speech-to-Text ready for Step 9");
+        System.out.println("MainActivity: Step 10 - Text-to-Sign mapping ready");
     }
 
     /**
@@ -101,6 +129,7 @@ public class MainActivity extends AppCompatActivity {
         btnStart = findViewById(R.id.btnStart);
         btnStop = findViewById(R.id.btnStop);
         btnClear = findViewById(R.id.btnClear);
+        btnShowSigns = findViewById(R.id.btnShowSigns);
         statusDot = findViewById(R.id.statusDot);
         tvStatus = findViewById(R.id.tvStatus);
     }
@@ -113,7 +142,6 @@ public class MainActivity extends AppCompatActivity {
             String username = sessionManager.getUsername();
             tvWelcomeUser.setText("Welcome, " + username);
         } else {
-            // This shouldn't happen, but just in case
             tvWelcomeUser.setText("Ready to convert speech");
         }
     }
@@ -122,10 +150,8 @@ public class MainActivity extends AppCompatActivity {
      * Initialize speech recognition components
      */
     private void initializeSpeechRecognition() {
-        // Create speech recognizer
         speechRecognizer = SpeechRecognizer.createSpeechRecognizer(this);
 
-        // Create speech recognition intent
         speechIntent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
         speechIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,
                 RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
@@ -134,7 +160,6 @@ public class MainActivity extends AppCompatActivity {
         speechIntent.putExtra(RecognizerIntent.EXTRA_MAX_RESULTS, 5);
         speechIntent.putExtra(RecognizerIntent.EXTRA_PROMPT, "Speak now...");
 
-        // Set up recognition listener
         speechRecognizer.setRecognitionListener(new RecognitionListener() {
             @Override
             public void onReadyForSpeech(Bundle params) {
@@ -144,7 +169,6 @@ public class MainActivity extends AppCompatActivity {
                     statusDot.setBackgroundColor(getResources().getColor(android.R.color.holo_green_light));
                     tvSignDescription.setText("Microphone active - Speaking detected");
                 });
-                System.out.println("SpeechRecognition: Ready for speech");
             }
 
             @Override
@@ -153,7 +177,6 @@ public class MainActivity extends AppCompatActivity {
                     tvStatus.setText("Speech detected");
                     tvSignDescription.setText("Processing your speech...");
                 });
-                System.out.println("SpeechRecognition: Beginning of speech");
             }
 
             @Override
@@ -165,9 +188,7 @@ public class MainActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onBufferReceived(byte[] buffer) {
-                // Not used
-            }
+            public void onBufferReceived(byte[] buffer) {}
 
             @Override
             public void onEndOfSpeech() {
@@ -175,7 +196,6 @@ public class MainActivity extends AppCompatActivity {
                     tvStatus.setText("Processing...");
                     statusDot.setBackgroundColor(getResources().getColor(android.R.color.holo_orange_light));
                 });
-                System.out.println("SpeechRecognition: End of speech");
             }
 
             @Override
@@ -184,7 +204,6 @@ public class MainActivity extends AppCompatActivity {
                     updateUIForListening(false);
                     handleSpeechError(error);
                 });
-                System.out.println("SpeechRecognition: Error " + error);
             }
 
             @Override
@@ -198,8 +217,10 @@ public class MainActivity extends AppCompatActivity {
                         tvStatus.setText("Recognition complete");
                         statusDot.setBackgroundColor(getResources().getColor(android.R.color.holo_blue_light));
                         tvSignDescription.setText("Text captured successfully!");
+
+                        // Step 10.1: Tokenize and process the text for sign mapping
+                        processTextForSigns(recognizedText);
                     });
-                    System.out.println("SpeechRecognition: Results - " + recognizedText);
                 }
             }
 
@@ -212,15 +233,219 @@ public class MainActivity extends AppCompatActivity {
                         tvRecognizedText.setText(partialText + " ▌");
                         tvSignDescription.setText("Processing: \"" + partialText + "\"");
                     });
-                    System.out.println("SpeechRecognition: Partial - " + partialText);
                 }
             }
 
             @Override
-            public void onEvent(int eventType, Bundle params) {
-                // Not used
-            }
+            public void onEvent(int eventType, Bundle params) {}
         });
+    }
+
+    /**
+     * Step 10.1: Tokenize and process text for sign mapping
+     */
+    private void processTextForSigns(String text) {
+        // Clear previous queue
+        wordQueue.clear();
+        currentWordIndex = 0;
+
+        // Tokenize text into words
+        String[] words = text.toLowerCase().split("\\s+");
+
+        // Filter out common filler words (Step 10.1)
+        List<String> filteredWords = new ArrayList<>();
+        for (String word : words) {
+            word = word.replaceAll("[^a-zA-Z]", ""); // Remove punctuation
+            if (!word.isEmpty() && !isFillerWord(word)) {
+                filteredWords.add(word);
+            }
+        }
+
+        wordQueue.addAll(filteredWords);
+
+        // Update UI to show word count
+        tvSignDescription.setText("Ready to show " + wordQueue.size() + " signs");
+
+        // Enable the "Show Signs" button
+        btnShowSigns.setEnabled(true);
+        btnShowSigns.setBackgroundColor(getResources().getColor(android.R.color.holo_purple));
+
+        // Log for debugging
+        System.out.println("Step 10.1: Tokenized text into " + wordQueue.size() + " words");
+        System.out.println("Words: " + wordQueue);
+
+        // If there are words, show first word preview
+        if (!wordQueue.isEmpty()) {
+            showWordPreview(wordQueue.get(0));
+        }
+    }
+
+    /**
+     * Check if word is a filler word
+     */
+    private boolean isFillerWord(String word) {
+        String[] fillerWords = {
+                "a", "an", "the", "and", "or", "but", "in", "on", "at", "to",
+                "for", "of", "with", "by", "is", "are", "was", "were", "be",
+                "been", "being", "have", "has", "had", "do", "does", "did",
+                "will", "would", "shall", "should", "may", "might", "must",
+                "can", "could", "um", "uh", "ah", "like", "you", "me", "i"
+        };
+
+        for (String filler : fillerWords) {
+            if (filler.equals(word)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Show preview of a word
+     */
+    private void showWordPreview(String word) {
+        // Check if word has a sign mapping
+        if (signMapper.hasSignForWord(word)) {
+            String signInfo = signMapper.getSignInfo(word);
+            tvCurrentWord.setText(word.toUpperCase());
+            tvCurrentWord.setVisibility(View.VISIBLE);
+            tvSignDescription.setText("Word: " + word + " → " + signInfo);
+
+            // Visual feedback for mapped word
+            ivSignAnimation.setImageResource(getRandomSignAnimation());
+            ivSignAnimation.animate().scaleX(1.1f).scaleY(1.1f).setDuration(300).start();
+        } else {
+            // Show fallback for missing sign
+            tvCurrentWord.setText("Spell: " + word.toUpperCase());
+            tvCurrentWord.setVisibility(View.VISIBLE);
+            tvSignDescription.setText("Word: " + word + " (will be spelled)");
+
+            // Different visual for spelled words
+            ivSignAnimation.setImageResource(R.drawable.ic_spell);
+            ivSignAnimation.animate().scaleX(0.9f).scaleY(0.9f).setDuration(300).start();
+        }
+    }
+
+    /**
+     * Step 10.4: Display signs sequentially
+     */
+    private void startShowingSigns() {
+        if (wordQueue.isEmpty() || isShowingSigns) {
+            return;
+        }
+
+        isShowingSigns = true;
+        currentWordIndex = 0;
+
+        // Disable controls during animation
+        btnStart.setEnabled(false);
+        btnStop.setEnabled(false);
+        btnClear.setEnabled(false);
+        btnShowSigns.setEnabled(false);
+
+        // Update status
+        tvStatus.setText("Showing signs...");
+        statusDot.setBackgroundColor(getResources().getColor(android.R.color.holo_purple));
+
+        // Start the sequence
+        showNextSign();
+    }
+
+    /**
+     * Show next sign in the sequence
+     */
+    private void showNextSign() {
+        if (currentWordIndex >= wordQueue.size()) {
+            // All signs shown
+            finishShowingSigns();
+            return;
+        }
+
+        String currentWord = wordQueue.get(currentWordIndex);
+
+        // Update display
+        tvCurrentWord.setText(currentWord.toUpperCase());
+        tvCurrentWord.setVisibility(View.VISIBLE);
+
+        // Step 10.2 & 10.3: Get sign animation or fallback
+        if (signMapper.hasSignForWord(currentWord)) {
+            // Word has a mapped sign
+            String signInfo = signMapper.getSignInfo(currentWord);
+            tvSignDescription.setText("Sign for: " + currentWord + " (" + signInfo + ")");
+
+            // Show "animation" - in real app this would be GIF/Lottie
+            ivSignAnimation.setImageResource(getRandomSignAnimation());
+
+            // Animation effect
+            ivSignAnimation.animate()
+                    .scaleX(1.3f).scaleY(1.3f)
+                    .setDuration(300)
+                    .withEndAction(() -> ivSignAnimation.animate()
+                            .scaleX(1.0f).scaleY(1.0f)
+                            .setDuration(300)
+                            .start())
+                    .start();
+
+            System.out.println("Step 10.2: Showing sign for word: " + currentWord);
+        } else {
+            // Step 10.3: Fallback to alphabet spelling
+            tvSignDescription.setText("Spelling: " + currentWord);
+
+            // Show spelling animation
+            ivSignAnimation.setImageResource(R.drawable.ic_spell);
+
+            // Visual feedback for spelling
+            ivSignAnimation.animate()
+                    .rotationBy(360)
+                    .setDuration(800)
+                    .start();
+
+            System.out.println("Step 10.3: Spelling word (no sign): " + currentWord);
+        }
+
+        // Log progress
+        System.out.println("Step 10.4: Showing sign " + (currentWordIndex + 1) +
+                " of " + wordQueue.size() + ": " + currentWord);
+
+        // Schedule next sign after delay
+        currentWordIndex++;
+        signHandler.postDelayed(this::showNextSign, 1500); // 1.5 seconds per sign
+    }
+
+    /**
+     * Finish showing signs sequence
+     */
+    private void finishShowingSigns() {
+        isShowingSigns = false;
+
+        // Re-enable controls
+        updateUIForListening(false);
+        btnShowSigns.setEnabled(true);
+
+        // Update status
+        tvStatus.setText("Sign sequence complete");
+        statusDot.setBackgroundColor(getResources().getColor(android.R.color.holo_green_dark));
+        tvSignDescription.setText(wordQueue.size() + " signs displayed successfully");
+
+        // Reset animation
+        tvCurrentWord.setVisibility(View.GONE);
+        ivSignAnimation.setImageResource(R.drawable.sign_language_placeholder);
+        ivSignAnimation.setScaleX(1.0f);
+        ivSignAnimation.setScaleY(1.0f);
+
+        // Show completion message
+        Toast.makeText(this, "Sign sequence completed!", Toast.LENGTH_SHORT).show();
+
+        System.out.println("Step 10.4: Sign sequence completed for " + wordQueue.size() + " words");
+    }
+
+    /**
+     * Get random sign animation (simulated)
+     */
+    private int getRandomSignAnimation() {
+        // In real app, this would return specific animation for each word
+        // For demo, return random from our placeholder animations
+        return signAnimations[(int) (Math.random() * signAnimations.length)];
     }
 
     /**
@@ -228,50 +453,39 @@ public class MainActivity extends AppCompatActivity {
      */
     private void setupUIState() {
         // Set initial text
-        tvRecognizedText.setText("Click 'Start Listening' and speak into your microphone.\n\nYour speech will appear here as text.");
+        tvRecognizedText.setText("Speak a sentence like: \"Hello, thank you, please help\"");
         tvEmptyText.setVisibility(View.VISIBLE);
-
-        // Set placeholder description
-        tvSignDescription.setText("Ready for speech input");
 
         // Set initial status
         tvStatus.setText("Ready - Tap Start to begin");
         statusDot.setBackgroundColor(getResources().getColor(android.R.color.darker_gray));
 
         // Logout button
-        btnLogout.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                logoutUser();
-            }
-        });
+        btnLogout.setOnClickListener(v -> logoutUser());
 
-        // Start button click listener
-        btnStart.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startSpeechRecognition();
-            }
-        });
+        // Start button
+        btnStart.setOnClickListener(v -> startSpeechRecognition());
 
-        // Stop button click listener
-        btnStop.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                stopSpeechRecognition();
-            }
-        });
+        // Stop button
+        btnStop.setOnClickListener(v -> stopSpeechRecognition());
 
-        // Clear button click listener
-        btnClear.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                clearRecognizedText();
+        // Clear button
+        btnClear.setOnClickListener(v -> clearRecognizedText());
+
+        // Show Signs button (Step 10 feature)
+        btnShowSigns.setOnClickListener(v -> {
+            if (!wordQueue.isEmpty()) {
+                startShowingSigns();
+            } else {
+                Toast.makeText(this, "No words to convert to signs. Speak first!",
+                        Toast.LENGTH_SHORT).show();
             }
         });
 
         // Initial button states
         updateUIForListening(false);
+        btnShowSigns.setEnabled(false);
+        btnShowSigns.setBackgroundColor(getResources().getColor(android.R.color.darker_gray));
     }
 
     /**
@@ -280,13 +494,9 @@ public class MainActivity extends AppCompatActivity {
     private void checkMicrophonePermission() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO)
                 != PackageManager.PERMISSION_GRANTED) {
-
-            // Request permission
             ActivityCompat.requestPermissions(this,
                     new String[]{Manifest.permission.RECORD_AUDIO},
                     RECORD_AUDIO_PERMISSION_CODE);
-        } else {
-            System.out.println("Microphone permission already granted");
         }
     }
 
@@ -296,14 +506,11 @@ public class MainActivity extends AppCompatActivity {
         if (requestCode == RECORD_AUDIO_PERMISSION_CODE) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                 Toast.makeText(this, "Microphone permission granted", Toast.LENGTH_SHORT).show();
-                System.out.println("Microphone permission granted by user");
             } else {
-                Toast.makeText(this, "Microphone permission denied. Speech recognition won't work.",
-                        Toast.LENGTH_LONG).show();
+                Toast.makeText(this, "Microphone permission denied", Toast.LENGTH_LONG).show();
                 btnStart.setEnabled(false);
                 btnStart.setText("Permission Needed");
                 tvStatus.setText("Microphone permission required");
-                System.out.println("Microphone permission denied by user");
             }
         }
     }
@@ -329,12 +536,9 @@ public class MainActivity extends AppCompatActivity {
 
                 // Visual feedback
                 ivSignAnimation.animate().scaleX(1.2f).scaleY(1.2f).setDuration(300).start();
-
-                System.out.println("Speech recognition started");
             } catch (Exception e) {
                 Toast.makeText(this, "Error starting speech recognition: " + e.getMessage(),
                         Toast.LENGTH_SHORT).show();
-                System.out.println("Error starting speech recognition: " + e.getMessage());
             }
         }
     }
@@ -347,11 +551,7 @@ public class MainActivity extends AppCompatActivity {
             speechRecognizer.stopListening();
             isListening = false;
             updateUIForListening(false);
-
-            // Visual feedback
             ivSignAnimation.animate().scaleX(1.0f).scaleY(1.0f).setDuration(300).start();
-
-            System.out.println("Speech recognition stopped");
         }
     }
 
@@ -363,8 +563,15 @@ public class MainActivity extends AppCompatActivity {
         tvEmptyText.setVisibility(View.VISIBLE);
         tvEmptyText.setText("Text cleared. Tap Start to speak again.");
         tvSignDescription.setText("Ready for new speech input");
-        Toast.makeText(this, "Text cleared", Toast.LENGTH_SHORT).show();
-        System.out.println("Recognized text cleared");
+
+        // Clear sign queue
+        wordQueue.clear();
+        currentWordIndex = 0;
+        btnShowSigns.setEnabled(false);
+        btnShowSigns.setBackgroundColor(getResources().getColor(android.R.color.darker_gray));
+        tvCurrentWord.setVisibility(View.GONE);
+
+        Toast.makeText(this, "Text and sign queue cleared", Toast.LENGTH_SHORT).show();
     }
 
     /**
@@ -378,10 +585,6 @@ public class MainActivity extends AppCompatActivity {
         tvRecognizedText.animate().alpha(0.7f).setDuration(200)
                 .withEndAction(() -> tvRecognizedText.animate().alpha(1.0f).setDuration(200).start())
                 .start();
-
-        // Update word count
-        int wordCount = text.trim().isEmpty() ? 0 : text.trim().split("\\s+").length;
-        tvSignDescription.setText(wordCount + " words recognized");
     }
 
     /**
@@ -390,31 +593,22 @@ public class MainActivity extends AppCompatActivity {
     private void updateUIForListening(boolean listening) {
         isListening = listening;
 
-        // Update button states
         btnStart.setEnabled(!listening);
         btnStop.setEnabled(listening);
-        btnClear.setEnabled(!listening);
+        btnClear.setEnabled(!listening && !isShowingSigns);
+        btnShowSigns.setEnabled(!listening && !isShowingSigns && !wordQueue.isEmpty());
 
-        // Update button colors through background tint
-        btnStart.setBackgroundTintList(listening ?
-                null : getColorStateList(android.R.color.holo_green_dark));
-        btnStop.setBackgroundTintList(listening ?
-                getColorStateList(android.R.color.holo_red_dark) : null);
-
-        // Update status
         if (listening) {
             tvStatus.setText("Listening...");
             statusDot.setBackgroundColor(getResources().getColor(android.R.color.holo_green_light));
-
-            // Animation feedback
             tvCurrentWord.setVisibility(View.VISIBLE);
             tvCurrentWord.setText("Speak now");
         } else {
             tvStatus.setText("Ready");
             statusDot.setBackgroundColor(getResources().getColor(android.R.color.darker_gray));
-
-            // Reset animation
-            tvCurrentWord.setVisibility(View.GONE);
+            if (!isShowingSigns) {
+                tvCurrentWord.setVisibility(View.GONE);
+            }
         }
     }
 
@@ -424,63 +618,33 @@ public class MainActivity extends AppCompatActivity {
     private void handleSpeechError(int errorCode) {
         String errorMessage;
         switch (errorCode) {
-            case SpeechRecognizer.ERROR_AUDIO:
-                errorMessage = "Audio recording error";
-                break;
-            case SpeechRecognizer.ERROR_CLIENT:
-                errorMessage = "Client side error";
-                break;
+            case SpeechRecognizer.ERROR_AUDIO: errorMessage = "Audio error"; break;
             case SpeechRecognizer.ERROR_INSUFFICIENT_PERMISSIONS:
-                errorMessage = "Insufficient permissions";
+                errorMessage = "Microphone permission needed";
                 checkMicrophonePermission();
                 break;
-            case SpeechRecognizer.ERROR_NETWORK:
-                errorMessage = "Network error";
-                break;
-            case SpeechRecognizer.ERROR_NETWORK_TIMEOUT:
-                errorMessage = "Network timeout";
-                break;
-            case SpeechRecognizer.ERROR_NO_MATCH:
-                errorMessage = "No speech recognized. Please try again.";
-                break;
-            case SpeechRecognizer.ERROR_RECOGNIZER_BUSY:
-                errorMessage = "Recognition service busy";
-                break;
-            case SpeechRecognizer.ERROR_SERVER:
-                errorMessage = "Server error";
-                break;
-            case SpeechRecognizer.ERROR_SPEECH_TIMEOUT:
-                errorMessage = "No speech input detected";
-                break;
-            default:
-                errorMessage = "Unknown error: " + errorCode;
+            case SpeechRecognizer.ERROR_NO_MATCH: errorMessage = "No speech recognized"; break;
+            case SpeechRecognizer.ERROR_SPEECH_TIMEOUT: errorMessage = "No speech input"; break;
+            default: errorMessage = "Error: " + errorCode;
         }
 
-        Toast.makeText(this, "Error: " + errorMessage, Toast.LENGTH_SHORT).show();
-        tvStatus.setText("Error: " + errorMessage.substring(0, Math.min(20, errorMessage.length())) + "...");
+        Toast.makeText(this, errorMessage, Toast.LENGTH_SHORT).show();
+        tvStatus.setText("Error");
         statusDot.setBackgroundColor(getResources().getColor(android.R.color.holo_red_light));
-
-        System.out.println("Speech recognition error: " + errorMessage);
     }
 
     /**
      * Logout user
      */
     private void logoutUser() {
+        if (isListening) stopSpeechRecognition();
+
         String username = sessionManager.getUsername();
         sessionManager.logoutUser();
 
-        // Stop speech recognition if active
-        if (isListening) {
-            stopSpeechRecognition();
-        }
-
-        // Navigate to LoginActivity
         Intent intent = new Intent(MainActivity.this, LoginActivity.class);
         startActivity(intent);
         finish();
-
-        System.out.println("MainActivity: User logged out - " + username);
     }
 
     @Override
@@ -489,11 +653,11 @@ public class MainActivity extends AppCompatActivity {
         if (speechRecognizer != null) {
             speechRecognizer.destroy();
         }
+        signHandler.removeCallbacksAndMessages(null);
     }
 
     @Override
     public void onBackPressed() {
-        // Minimize the app instead of going back
         moveTaskToBack(true);
     }
 }
