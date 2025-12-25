@@ -6,7 +6,6 @@
     android:layout_height="match_parent"
     android:background="#6200EE">
 
-    <!-- App Logo/Name -->
     <TextView
         android:id="@+id/tvSplashTitle"
         android:layout_width="wrap_content"

@@ -7,7 +7,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 public class LoginActivity extends AppCompatActivity {
 
-    // UI elements identified for planning
+    // UI elements - declared but not used functionally
     private EditText etUsername, etPassword;
     private Button btnLogin;
 
@@ -16,12 +16,12 @@ public class LoginActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        // Initialize views (for reference in planning)
+        // Initialize views (visual only - no functionality)
         etUsername = findViewById(R.id.etUsername);
         etPassword = findViewById(R.id.etPassword);
         btnLogin = findViewById(R.id.btnLogin);
 
-        // No functional logic added - this is Step 3: UI Planning only
-        // Login logic will be implemented in Step 4
+        // Step 4: No click listeners, no validation, no logic
+        // Button exists visually but does nothing
     }
 }

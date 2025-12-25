@@ -6,7 +6,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 public class MainActivity extends AppCompatActivity {
 
-    // UI element identified for planning
+    // UI element - declared but not used functionally
     private Button btnLogout;
 
     @Override
@@ -14,10 +14,10 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        // Initialize view (for reference in planning)
+        // Initialize view (visual only - no functionality)
         btnLogout = findViewById(R.id.btnLogout);
 
-        // No functional logic added - this is Step 3: UI Planning only
-        // Logout logic will be implemented in Step 4
+        // Step 4: No click listeners, no navigation, no logic
+        // Button exists visually but does nothing
     }
 }

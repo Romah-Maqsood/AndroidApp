@@ -10,7 +10,7 @@ public class SplashActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
 
-        // No navigation logic added - this is Step 3: UI Planning only
-        // Splash screen logic will be implemented in Step 4
+        // Step 4: No navigation logic, no delay, no handlers
+        // Screen displays visually but doesn't navigate anywhere
     }
 }

@@ -5,12 +5,27 @@ import android.content.SharedPreferences;
 
 public class SessionManager {
 
-    // This class will be implemented in Step 4
-    // Currently empty for UI planning phase only
+    // Step 4: Empty implementation - no logic
+    // This class will be implemented in later steps
 
     public SessionManager(Context context) {
-        // Constructor - will be implemented later
+        // Empty constructor for Step 4
     }
 
-    // All methods will be implemented in Step 4
+    // All methods will return default values for Step 4
+    public void createLoginSession(String username) {
+        // Empty for Step 4
+    }
+
+    public boolean isLoggedIn() {
+        return false; // Default for Step 4
+    }
+
+    public String getUsername() {
+        return null; // Default for Step 4
+    }
+
+    public void logoutUser() {
+        // Empty for Step 4
+    }
 }
