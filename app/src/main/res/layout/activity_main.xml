@@ -17,7 +17,7 @@
         android:elevation="4dp"
         android:layout_marginBottom="24dp">
 
-        <!-- Simple colored circle as app logo -->
+        <!-- App logo -->
         <View
             android:layout_width="48dp"
             android:layout_height="48dp"
@@ -40,9 +40,10 @@
                 android:textStyle="bold" />
 
             <TextView
+                android:id="@+id/tvLoginStatus"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Ready to sign documents"
+                android:text="Session saved locally"
                 android:textSize="14sp"
                 android:textColor="#757575"
                 android:layout_marginTop="4dp" />
@@ -57,7 +58,7 @@
         android:orientation="vertical"
         android:gravity="center">
 
-        <!-- Simple colored square as document icon -->
+        <!-- Document icon -->
         <View
             android:layout_width="120dp"
             android:layout_height="120dp"
@@ -67,18 +68,19 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="No documents pending"
+            android:text="Step 6: SharedPreferences Demo"
             android:textSize="18sp"
-            android:textColor="#757575" />
+            android:textColor="#2196F3"
+            android:textStyle="bold" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Upload or create a new document to get started"
+            android:text="✓ Login state saved locally\n✓ Data persists after app close\n✓ No navigation yet"
             android:textSize="14sp"
-            android:textColor="#BDBDBD"
-            android:layout_marginTop="8dp"
-            android:textAlignment="center" />
+            android:textColor="#757575"
+            android:layout_marginTop="16dp"
+            android:lineSpacingExtra="4dp" />
     </LinearLayout>
 
     <!-- Logout Button -->
@@ -86,7 +88,7 @@
         android:id="@+id/btnLogout"
         android:layout_width="match_parent"
         android:layout_height="56dp"
-        android:text="Sign Out"
+        android:text="Sign Out (Coming in Step 7)"
         android:textSize="16sp"
         android:background="#F44336"
         android:textColor="#FFFFFF"
