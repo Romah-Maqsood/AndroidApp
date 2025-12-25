@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.example.echosign">
 
     <application
         android:allowBackup="true"
@@ -9,7 +10,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.EchoSign">
 
-        <!-- Splash Activity as launcher -->
+        <!-- Splash Activity (Launcher) -->
         <activity
             android:name=".SplashActivity"
             android:exported="true"
@@ -23,12 +24,14 @@
         <!-- Login Activity -->
         <activity
             android:name=".LoginActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:theme="@style/Theme.EchoSign" />
 
         <!-- Main Activity -->
         <activity
             android:name=".MainActivity"
-            android:exported="false" />
+            android:exported="false"
+            android:theme="@style/Theme.EchoSign" />
     </application>
 
 </manifest>

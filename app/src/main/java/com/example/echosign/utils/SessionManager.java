@@ -1,45 +1,16 @@
-package com.example.echosign;
+package com.example.echosign.utils;
 
 import android.content.Context;
 import android.content.SharedPreferences;
 
 public class SessionManager {
 
-    private SharedPreferences sharedPreferences;
-    private SharedPreferences.Editor editor;
-    private Context context;
-
-    // Shared Preferences keys
-    private static final String PREF_NAME = "EchoSignLogin";
-    private static final String KEY_IS_LOGGED_IN = "isLoggedIn";
-    private static final String KEY_USERNAME = "username";
+    // This class will be implemented in Step 4
+    // Currently empty for UI planning phase only
 
     public SessionManager(Context context) {
-        this.context = context;
-        sharedPreferences = context.getSharedPreferences(PREF_NAME, Context.MODE_PRIVATE);
-        editor = sharedPreferences.edit();
+        // Constructor - will be implemented later
     }
 
-    // Method to create login session
-    public void createLoginSession(String username) {
-        editor.putBoolean(KEY_IS_LOGGED_IN, true);
-        editor.putString(KEY_USERNAME, username);
-        editor.commit();
-    }
-
-    // Method to check login status
-    public boolean isLoggedIn() {
-        return sharedPreferences.getBoolean(KEY_IS_LOGGED_IN, false);
-    }
-
-    // Method to get stored username
-    public String getUsername() {
-        return sharedPreferences.getString(KEY_USERNAME, null);
-    }
-
-    // Method to logout user
-    public void logoutUser() {
-        editor.clear();
-        editor.commit();
-    }
+    // All methods will be implemented in Step 4
 }
