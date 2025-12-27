@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <!-- Primary colors -->
-    <color name="colorPrimary">#2196F3</color>
-    <color name="colorPrimaryDark">#1976D2</color>
-    <color name="colorAccent">#03A9F4</color>
+    <color name="colorPrimary">#C4D9FF</color>
+    <color name="colorPrimaryDark">#C5BAFF</color>
+    <color name="colorAccent">#E8F9FF</color>
 
     <!-- Text colors -->
     <color name="text_primary">#212121</color>
@@ -11,16 +11,13 @@
     <color name="text_hint">#9E9E9E</color>
 
     <!-- Background colors -->
-    <color name="background_light">#F8F9FA</color>
+    <color name="background_light">#FBFBFB</color>
+    <color name="background_surface">#E8F9FF</color>
     <color name="background_white">#FFFFFF</color>
-    <color name="background_grey">#F5F5F5</color>
 
     <!-- Status colors -->
     <color name="status_ready">#4CAF50</color>
     <color name="status_listening">#2196F3</color>
     <color name="status_error">#F44336</color>
     <color name="status_inactive">#E0E0E0</color>
-
-    <color name="purple_500">#9C27B0</color>
-    <color name="purple_700">#7B1FA2</color>
 </resources>

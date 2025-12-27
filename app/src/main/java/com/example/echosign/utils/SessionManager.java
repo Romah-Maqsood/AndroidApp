@@ -16,6 +16,11 @@ public class SessionManager {
     private static final String KEY_IS_LOGGED_IN = "isLoggedIn";
     private static final String KEY_USERNAME = "username";
     private static final String KEY_PASSWORD = "password";
+    private static final String KEY_SETUP_COMPLETE = "setupComplete";
+    private static final String KEY_SIGN_MODE = "signMode";
+    private static final String KEY_CAPTIONS_ENABLED = "captionsEnabled";
+    private static final String KEY_USAGE_PURPOSE = "usagePurpose";
+
 
     // Constructor
     public SessionManager(Context context) {
@@ -66,6 +71,52 @@ public class SessionManager {
     }
 
     /**
+     * Save user preferences from the setup screen.
+     */
+    public void saveUserPreferences(String signMode, boolean captionsEnabled, String usagePurpose) {
+        editor.putString(KEY_SIGN_MODE, signMode);
+        editor.putBoolean(KEY_CAPTIONS_ENABLED, captionsEnabled);
+        editor.putString(KEY_USAGE_PURPOSE, usagePurpose);
+        editor.apply();
+    }
+
+    /**
+     * Get the stored sign mode preference.
+     */
+    public String getSignMode() {
+        return sharedPreferences.getString(KEY_SIGN_MODE, "ASL"); // Default to ASL
+    }
+
+    /**
+     * Check if captions are enabled.
+     */
+    public boolean areCaptionsEnabled() {
+        return sharedPreferences.getBoolean(KEY_CAPTIONS_ENABLED, true); // Default to true
+    }
+
+    /**
+     * Get the stored usage purpose.
+     */
+    public String getUsagePurpose() {
+        return sharedPreferences.getString(KEY_USAGE_PURPOSE, "Learning"); // Default to Learning
+    }
+
+    /**
+     * Mark the one-time setup as complete.
+     */
+    public void setSetupComplete(boolean isComplete) {
+        editor.putBoolean(KEY_SETUP_COMPLETE, isComplete);
+        editor.apply();
+    }
+
+    /**
+     * Check if the one-time setup has been completed.
+     */
+    public boolean isSetupComplete() {
+        return sharedPreferences.getBoolean(KEY_SETUP_COMPLETE, false);
+    }
+
+    /**
      * Clear session data (logout)
      */
     public void logoutUser() {
@@ -87,9 +138,17 @@ public class SessionManager {
         boolean isLoggedIn = sharedPreferences.getBoolean(KEY_IS_LOGGED_IN, false);
         String username = sharedPreferences.getString(KEY_USERNAME, "null");
         String password = sharedPreferences.getString(KEY_PASSWORD, "null");
+        boolean setupComplete = isSetupComplete();
+        String signMode = getSignMode();
+        boolean captionsEnabled = areCaptionsEnabled();
+        String usagePurpose = getUsagePurpose();
 
         return "isLoggedIn: " + isLoggedIn +
-                "\nUsername: " + username +
-                "\nPassword: " + (password.length() + " characters");
+                "\\nUsername: " + username +
+                "\\nPassword: " + (password.length() + " characters") +
+                "\\nSetup Complete: " + setupComplete +
+                "\\nSign Mode: " + signMode +
+                "\\nCaptions Enabled: " + captionsEnabled +
+                "\\nUsage Purpose: " + usagePurpose;
     }
 }
