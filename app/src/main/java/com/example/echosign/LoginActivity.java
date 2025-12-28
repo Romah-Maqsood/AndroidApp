@@ -50,12 +50,19 @@ public class LoginActivity extends AppCompatActivity {
 
                     // Show confirmation
                     Toast.makeText(LoginActivity.this,
-                            "Login successful!\nWelcome, " + username,
+                            "Login successful!\\nWelcome, " + username,
                             Toast.LENGTH_SHORT).show();
 
-                    // Step 7.4: Navigate to MainActivity and prevent back navigation
-                    Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                    startActivity(intent);
+                    // Check if setup has been completed
+                    if (sessionManager.isSetupComplete()) {
+                        // Navigate to MainActivity
+                        Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                        startActivity(intent);
+                    } else {
+                        // Navigate to SetupActivity for one-time setup
+                        Intent intent = new Intent(LoginActivity.this, SetupActivity.class);
+                        startActivity(intent);
+                    }
                     finish(); // Close LoginActivity so user can't go back
                 }
             }

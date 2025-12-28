@@ -55,11 +55,6 @@ public class ASLGlossConverter {
             "what", "where", "when", "why", "how", "who", "which", "whose"
     ));
 
-    // ASL grammar rules: Subject + Time + Object + Verb (STOV) or Time + Subject + Object + Verb (TSOV)
-    private static final Set<String> TIME_WORDS = new HashSet<>(Arrays.asList(
-            "now", "today", "tomorrow", "yesterday", "soon", "later", "before", "after"
-    ));
-
     /**
      * Convert English sentence to ASL Gloss
      * @param englishText Input English text
@@ -75,7 +70,7 @@ public class ASLGlossConverter {
         // Step 1: Tokenize and clean
         List<String> tokens = tokenizeAndClean(englishText);
 
-        // Step 2: Apply ASL grammar rules
+        // Step 2: Apply ASL grammar rules (simplified: remove filler words)
         List<String> aslTokens = applyASLGrammar(tokens);
 
         // Step 3: Convert to uppercase (ASL Gloss convention)
@@ -109,7 +104,7 @@ public class ASLGlossConverter {
     }
 
     /**
-     * Step 2: Apply ASL grammar rules
+     * Step 2: Apply ASL grammar rules (simplified: remove filler words)
      */
     private List<String> applyASLGrammar(List<String> tokens) {
         if (tokens.isEmpty()) {
@@ -117,39 +112,12 @@ public class ASLGlossConverter {
         }
 
         List<String> aslTokens = new ArrayList<>();
-
-        // Separate time words, subject, object, and verb
-        List<String> timeWords = new ArrayList<>();
-        List<String> subjectWords = new ArrayList<>();
-        List<String> objectWords = new ArrayList<>();
-        List<String> verbWords = new ArrayList<>();
-        List<String> otherWords = new ArrayList<>();
-
-        // Classify each word
         for (String token : tokens) {
-            if (TIME_WORDS.contains(token)) {
-                timeWords.add(token);
-            } else if (isSubjectWord(token)) {
-                subjectWords.add(token);
-            } else if (isVerbWord(token)) {
-                verbWords.add(token);
-            } else if (isObjectWord(token)) {
-                objectWords.add(token);
-            } else if (shouldKeepInASL(token)) {
-                otherWords.add(token);
+            if (shouldKeepInASL(token)) {
+                aslTokens.add(token);
             }
-            // Words not classified are filtered out (English grammar words)
         }
-
-        // Apply ASL sentence structure: Time + Subject + Object + Verb
-        aslTokens.addAll(timeWords);
-        aslTokens.addAll(subjectWords);
-        aslTokens.addAll(objectWords);
-        aslTokens.addAll(verbWords);
-        aslTokens.addAll(otherWords);
-
-        // Remove duplicates while preserving order
-        return removeDuplicates(aslTokens);
+        return aslTokens;
     }
 
     /**
@@ -171,91 +139,14 @@ public class ASLGlossConverter {
     }
 
     /**
-     * Check if word is a subject (pronoun or noun)
-     */
-    private boolean isSubjectWord(String word) {
-        String[] subjectPronouns = {"i", "you", "he", "she", "it", "we", "they"};
-        return Arrays.asList(subjectPronouns).contains(word);
-    }
-
-    /**
-     * Check if word is a verb
-     */
-    private boolean isVerbWord(String word) {
-        String[] commonVerbs = {
-                "want", "need", "like", "love", "hate", "go", "come", "see", "look", "watch",
-                "hear", "listen", "speak", "talk", "say", "tell", "ask", "answer", "know", "understand",
-                "think", "feel", "believe", "hope", "wish", "help", "give", "take", "bring", "get",
-                "make", "do", "work", "play", "eat", "drink", "sleep", "wake", "live", "die"
-        };
-
-        // Check if word is in common verbs
-        for (String verb : commonVerbs) {
-            if (word.equals(verb) ||
-                    word.equals(verb + "s") ||
-                    word.equals(verb + "ed") ||
-                    word.equals(verb + "ing")) {
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    /**
-     * Check if word is an object (likely a noun)
-     */
-    private boolean isObjectWord(String word) {
-        // Words that are likely objects (nouns)
-        String[] commonNouns = {
-                "help", "water", "food", "bathroom", "doctor", "hospital", "home", "school",
-                "work", "store", "money", "time", "day", "person", "people", "child"
-        };
-
-        for (String noun : commonNouns) {
-            if (word.equals(noun) || word.equals(noun + "s")) {
-                return true;
-            }
-        }
-
-        // If it's not a subject, verb, or time word, and it's kept, it might be an object
-        return !isSubjectWord(word) && !isVerbWord(word) && !TIME_WORDS.contains(word) && shouldKeepInASL(word);
-    }
-
-    /**
      * Step 3: Convert to ASL Gloss format (uppercase)
      */
     private List<String> convertToGlossFormat(List<String> tokens) {
         List<String> glossTokens = new ArrayList<>();
-
         for (String token : tokens) {
-            // Convert to uppercase (ASL Gloss convention)
-            String glossWord = token.toUpperCase();
-
-            // Add if not already in list (avoid duplicates)
-            if (!glossTokens.contains(glossWord)) {
-                glossTokens.add(glossWord);
-            }
+            glossTokens.add(token.toUpperCase());
         }
-
         return glossTokens;
-    }
-
-    /**
-     * Remove duplicates while preserving order
-     */
-    private List<String> removeDuplicates(List<String> list) {
-        List<String> result = new ArrayList<>();
-        Set<String> seen = new HashSet<>();
-
-        for (String item : list) {
-            if (!seen.contains(item)) {
-                seen.add(item);
-                result.add(item);
-            }
-        }
-
-        return result;
     }
 
     /**
@@ -266,16 +157,16 @@ public class ASLGlossConverter {
         examples.append("ASL Gloss Conversion Examples:\n");
 
         String[][] testCases = {
-                {"Thank you for your help", "THANK YOU HELP"},
+                {"Thank you for your help", "THANK YOU YOUR HELP"},
                 {"I need water and food", "I NEED WATER FOOD"},
                 {"Where is the bathroom", "WHERE BATHROOM"},
                 {"What time is it now", "WHAT TIME NOW"},
                 {"My name is Alex", "MY NAME ALEX"},
                 {"How are you today", "HOW YOU TODAY"},
-                {"I want to go home", "I WANT GO HOME"},
+                {"I want to go to bathroom", "I WANT GO BATHROOM"},
                 {"Please help me find the doctor", "PLEASE HELP ME FIND DOCTOR"},
-                {"Can you tell me the time", "CAN YOU TELL ME TIME"},
-                {"I like to play with my friends", "I LIKE PLAY FRIENDS"}
+                {"Can you tell me the time", "YOU TELL ME TIME"},
+                {"I like to play with my friends", "I LIKE PLAY MY FRIENDS"}
         };
 
         for (String[] testCase : testCases) {
