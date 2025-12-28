@@ -284,7 +284,13 @@ For questions, issues, or suggestions:
 
 GitHub Issues: Open an Issue
 
-Email: your.romahmaqsood@gmail.com
+Email: romahmaqsood@gmail.com
 
-Project Link: https://github.com/yourusername/echosign
+Project Link: https://github.com/Romah-Maqsood/echosign
+
+<div align="center">
+🌟 Star this repository if you find EchoSign helpful!
+Making Communication Accessible for Everyone
+
+</div> ```
 
