@@ -1,23 +1,76 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <!-- Primary colors -->
-    <color name="colorPrimary">#C4D9FF</color>
-    <color name="colorPrimaryDark">#C5BAFF</color>
-    <color name="colorAccent">#E8F9FF</color>
+    <!-- ========== WINTER THEME PALETTE ========== -->
+    <!-- Primary Winter Colors -->
+    <color name="winter_beige">#EFECE3</color>
+    <color name="winter_blue_light">#8FABD4</color>
+    <color name="winter_blue_dark">#4A70A9</color>
+    <color name="winter_black">#000000</color>
 
-    <!-- Text colors -->
-    <color name="text_primary">#212121</color>
-    <color name="text_secondary">#757575</color>
+    <!-- Semantic Colors for Theme -->
+    <color name="colorPrimary">@color/winter_blue_dark</color>
+    <color name="colorPrimaryDark">#3A60A0</color> <!-- Darker shade for status bar -->
+    <color name="colorAccent">@color/winter_blue_light</color>
+
+    <!-- Text colors (Keeping your contrast good) -->
+    <color name="text_primary">#1A1A1A</color>
+    <color name="text_secondary">#666666</color>
     <color name="text_hint">#9E9E9E</color>
+    <color name="text_on_primary">#FFFFFF</color>
+    <color name="text_on_accent">#FFFFFF</color>
 
     <!-- Background colors -->
-    <color name="background_light">#FBFBFB</color>
-    <color name="background_surface">#E8F9FF</color>
+    <color name="background_light">@color/winter_beige</color>
+    <color name="background_surface">#FFFFFFFF</color>
     <color name="background_white">#FFFFFF</color>
+    <color name="background_card">#FFFFFFFF</color>
+    <color name="background_dialog">#FFFFFFFF</color>
 
-    <!-- Status colors -->
-    <color name="status_ready">#4CAF50</color>
-    <color name="status_listening">#2196F3</color>
-    <color name="status_error">#F44336</color>
+    <!-- Button States -->
+    <color name="button_normal">@color/winter_blue_dark</color>
+    <color name="button_pressed">#3A60A0</color>
+    <color name="button_disabled">#B0C4E8</color>
+
+    <!-- Border & Divider -->
+    <color name="border_light">#E0E0E0</color>
+    <color name="border_medium">@color/winter_blue_light</color>
+    <color name="divider">#F0F0F0</color>
+
+    <!-- Status colors (Keeping your existing ones) -->
+    <color name="status_ready">#2E7D32</color>
+    <color name="status_listening">@color/winter_blue_dark</color>
+    <color name="status_error">#D32F2F</color>
     <color name="status_inactive">#E0E0E0</color>
+    <color name="status_warning">#F57C00</color>
+    <color name="status_success">#388E3C</color>
+
+    <!-- Chat Bubbles -->
+    <color name="chat_bot_bg">#F0F4FA</color>
+    <color name="chat_user_bg">@color/winter_blue_light</color>
+    <color name="chat_bot_text">#1A1A1A</color>
+    <color name="chat_user_text">#FFFFFF</color>
+
+    <!-- Shadows -->
+    <color name="shadow_light">#1A4A70A9</color>
+    <color name="shadow_medium">#334A70A9</color>
+    <color name="shadow_dark">#664A70A9</color>
+
+    <!-- Gradient Colors -->
+    <color name="gradient_start">@color/winter_blue_dark</color>
+    <color name="gradient_middle">#6D97C9</color>
+    <color name="gradient_end">@color/winter_blue_light</color>
+
+    <!-- Icons -->
+    <color name="icon_primary">@color/winter_blue_dark</color>
+    <color name="icon_secondary">@color/winter_blue_light</color>
+    <color name="icon_on_primary">#FFFFFF</color>
+
+    <!-- Input Fields -->
+    <color name="input_background">#FFFFFFFF</color>
+    <color name="input_border">@color/winter_blue_light</color>
+    <color name="input_border_focused">@color/winter_blue_dark</color>
+
+    <!-- Progress/Loading -->
+    <color name="progress_primary">@color/winter_blue_dark</color>
+    <color name="progress_background">#E8E8E8</color>
 </resources>

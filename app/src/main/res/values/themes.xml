@@ -5,25 +5,53 @@
         <!-- Primary brand color -->
         <item name="colorPrimary">@color/colorPrimary</item>
         <item name="colorPrimaryVariant">@color/colorPrimaryDark</item>
-        <item name="colorOnPrimary">@color/text_primary</item>
+        <item name="colorOnPrimary">@color/text_on_primary</item>
 
         <!-- Secondary brand color -->
         <item name="colorSecondary">@color/colorAccent</item>
-        <item name="colorSecondaryVariant">@color/colorPrimaryDark</item>
-        <item name="colorOnSecondary">@color/text_primary</item>
+        <item name="colorSecondaryVariant">#6D97C9</item>
+        <item name="colorOnSecondary">@color/text_on_primary</item>
 
         <!-- Background colors -->
         <item name="android:windowBackground">@color/background_light</item>
         <item name="android:statusBarColor">@color/colorPrimaryDark</item>
+        <item name="android:navigationBarColor">@color/winter_beige</item>
+
+        <!-- Surface colors -->
+        <item name="colorSurface">@color/background_surface</item>
+        <item name="colorOnSurface">@color/text_primary</item>
 
         <!-- Text colors -->
         <item name="android:textColorPrimary">@color/text_primary</item>
         <item name="android:textColorSecondary">@color/text_secondary</item>
+        <item name="android:textColorHint">@color/text_hint</item>
+
+        <!-- Button style - Simple reference that exists -->
+        <item name="buttonStyle">@android:style/Widget.Material.Button</item>
+
+        <!-- EditText style - Simple reference that exists -->
+        <item name="editTextStyle">@android:style/Widget.Material.EditText</item>
+
+        <!-- Dialog theme - Using AppCompat for compatibility -->
+        <item name="alertDialogTheme">@style/ThemeOverlay.AppCompat.Dialog.Alert</item>
+
+        <!-- Window animations -->
+        <item name="android:windowAnimationStyle">@style/WindowAnimation.EchoSign</item>
     </style>
 
     <!-- Splash Theme -->
     <style name="Theme.EchoSign.Splash" parent="Theme.EchoSign">
-        <item name="android:windowBackground">@color/colorPrimary</item>
+        <item name="android:windowBackground">@drawable/app_background_gradient</item>
         <item name="android:statusBarColor">@color/colorPrimaryDark</item>
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:windowContentOverlay">@null</item>
+    </style>
+
+    <!-- Window Animations -->
+    <style name="WindowAnimation.EchoSign" parent="@android:style/Animation">
+        <item name="android:windowEnterAnimation">@android:anim/fade_in</item>
+        <item name="android:windowExitAnimation">@android:anim/fade_out</item>
+        <item name="android:activityOpenEnterAnimation">@android:anim/fade_in</item>
+        <item name="android:activityOpenExitAnimation">@android:anim/fade_out</item>
     </style>
 </resources>
