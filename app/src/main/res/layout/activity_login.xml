@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="?android:attr/windowBackground"
+    android:background="@color/background_light"
     android:orientation="vertical"
     android:gravity="center_horizontal"
     android:padding="32dp">
@@ -22,7 +22,7 @@
             android:layout_height="100dp"
             android:src="@drawable/echosignlogo"
             android:contentDescription="@string/app_name"
-            android:elevation="4dp" />
+            android:elevation="2dp" />
 
         <!-- App Name -->
         <TextView
@@ -32,7 +32,7 @@
             android:text="EchoSign"
             android:textSize="32sp"
             android:textStyle="bold"
-            android:textColor="?attr/colorOnPrimary"
+            android:textColor="@color/text_on_primary"
             android:layout_marginTop="16dp" />
 
         <!-- Tagline -->
@@ -40,9 +40,9 @@
             android:id="@+id/tvTagline"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Secure Document Signing"
+            android:text="Speech to Sign Language"
             android:textSize="14sp"
-            android:textColor="?attr/colorOnSecondary"
+            android:textColor="@color/text_on_primary"
             android:layout_marginTop="8dp" />
     </LinearLayout>
 
@@ -61,14 +61,13 @@
             android:layout_height="wrap_content"
             android:text="Welcome Back"
             android:textSize="20sp"
-            android:textColor="?android:attr/textColorPrimary"
+            android:textColor="@color/text_primary"
             android:layout_marginBottom="24dp"
             android:layout_gravity="center_horizontal" />
 
         <!-- Username/Email Field -->
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/tilUsername"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="16dp"
@@ -80,13 +79,12 @@
                 android:layout_height="wrap_content"
                 android:inputType="textEmailAddress"
                 android:maxLines="1"
-                android:textColor="?android:attr/textColorPrimary" />
+                android:textColor="@color/text_primary" />
         </com.google.android.material.textfield.TextInputLayout>
 
         <!-- Password Field -->
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/tilPassword"
-            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginBottom="32dp"
@@ -98,20 +96,19 @@
                 android:layout_height="wrap_content"
                 android:inputType="textPassword"
                 android:maxLines="1"
-                android:textColor="?android:attr/textColorPrimary" />
+                android:textColor="@color/text_primary" />
         </com.google.android.material.textfield.TextInputLayout>
-
 
         <!-- Login Button -->
         <Button
             android:id="@+id/btnLogin"
             android:layout_width="match_parent"
             android:layout_height="56dp"
-            android:background="?attr/colorPrimary"
+            android:background="@color/colorPrimary"
             android:gravity="center"
             android:padding="0dp"
             android:text="Sign In"
-            android:textColor="?attr/colorOnPrimary"
+            android:textColor="@color/text_on_primary"
             android:textSize="16sp" />
     </LinearLayout>
 
@@ -121,7 +118,7 @@
         android:layout_height="wrap_content"
         android:text="© 2024 EchoSign. All rights reserved."
         android:textSize="12sp"
-        android:textColor="?android:attr/textColorSecondary"
+        android:textColor="@color/text_secondary"
         android:layout_marginTop="24dp" />
 
 </LinearLayout>

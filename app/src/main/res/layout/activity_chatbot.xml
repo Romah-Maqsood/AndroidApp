@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="?android:attr/windowBackground"
+    android:background="@color/background_light"
     tools:context=".ChatbotActivity">
 
     <androidx.recyclerview.widget.RecyclerView
@@ -21,7 +21,8 @@
         android:layout_alignParentBottom="true"
         android:orientation="horizontal"
         android:padding="8dp"
-        android:gravity="center_vertical">
+        android:gravity="center_vertical"
+        android:background="@color/background_card">
 
         <EditText
             android:id="@+id/etMessage"
@@ -32,14 +33,21 @@
             android:inputType="textMultiLine"
             android:maxLines="4"
             android:padding="12dp"
-            android:background="@drawable/edittext_border"/>
+            android:background="@drawable/edittext_border"
+            android:textColor="@color/text_primary" />
 
         <Button
             android:id="@+id/btnSend"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginStart="8dp"
+            android:background="@color/colorPrimary"
             android:text="Send"
-            android:layout_marginStart="8dp"/>
+            android:textColor="@color/text_on_primary"
+            android:paddingStart="16dp"
+            android:paddingEnd="16dp"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"/>
     </LinearLayout>
 
 </RelativeLayout>

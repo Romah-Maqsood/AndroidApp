@@ -73,4 +73,6 @@
     <!-- Progress/Loading -->
     <color name="progress_primary">@color/winter_blue_dark</color>
     <color name="progress_background">#E8E8E8</color>
+
+
 </resources>
